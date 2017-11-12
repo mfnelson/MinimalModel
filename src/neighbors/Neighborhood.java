@@ -9,8 +9,6 @@ import model.Model;
 public class Neighborhood {
 
 	Cell[] neighbors;
-	double[] neighborScores;
-	
 	
 	public Neighborhood(
 			NeighborhoodTemplate template, 
@@ -18,7 +16,6 @@ public class Neighborhood {
 			int col, 
 			Model model){
 		neighbors = new Cell[template.distances.length];
-		neighborScores = new double[template.distances.length];
 		buildNeighbors(template, row, col, model);
 	}
 	
@@ -32,18 +29,8 @@ public class Neighborhood {
 		}
 	}
 	
-	/** Neighbor scores are cumulative sums and must be ascending for the binary search
-	 * to work in the random neighborID getter below.*/
-	public void updateScores(NeighborhoodTemplate template) {
-		double sum = 0;
-		for(int i = 0; i < neighbors.length; i++){
-			sum += neighbors[i].getOccupancyScore() * template.weightedDistanceScores[i];
-			neighborScores[i] = sum;
-		}
-	}
-	
-	public Cell getWeightedRandomCell(Uniform unif){
-		double rand = unif.staticNextDoubleFromTo(0d, neighborScores[neighborScores.length - 1]);
+	public Cell getWeightedRandomCell(Uniform unif, NeighborhoodTemplate template){
+		double rand = unif.nextDoubleFromTo(0d, template.cumulativeWeightedDistanceScores[template.unweightedDistanceScores.length - 1]);
 		
 		/* This was confusing to me so I needed to enumerate the possibilities.
 		 * Per Javadoc:
@@ -80,11 +67,7 @@ public class Neighborhood {
 		 * 							abs(~x) =  2
 		 * 			we want			x  		=  2
 		 */
-		int index = Math.abs(~Arrays.binarySearch(neighborScores, rand));
+		int index = Math.abs(~Arrays.binarySearch(template.cumulativeWeightedDistanceScores, rand));
 		return neighbors[index];
 	}
-	
-	
-	
-	
 }

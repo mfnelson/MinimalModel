@@ -10,25 +10,21 @@ public class Parameters {
 	
 	public final int nRows;
 	public final int nCols;
+	public final int nYears;
 	
-	public final int nTreesPerCell;
-	public final int nInitialBeetlesPerCell;
+	public final String saveFileName;
 	
 	public final double neighborhoodRadius;
-	public final double distanceSelf;
 	public final double cellWidth;
+	public final double distanceSelf;
 	
 	public final double distanceParamA;
 	public final double distanceParamB;
 	public final double distanceScoreWeight;
 
-	
-	public final int treeRegenerationRate;
-	public final int treeAttackTreshold;
-	public final int minTreesForAttack;
-	public final int maxBeetlesPerTree;
 	public final double beetleReproductionRate;
-
+	public final int initialBeetlesPerCell;
+	
 	public Parameters(String parameterFilename){
 		
 		Map<String, String> pMap = CSVUtils.csvToHashMap(parameterFilename);
@@ -37,9 +33,9 @@ public class Parameters {
 		
 		nRows = Integer.parseInt(pMap.get("nRows"));
 		nCols = Integer.parseInt(pMap.get("nCols"));
+		nYears = Integer.parseInt(pMap.get("nYears"));
 		
-		nTreesPerCell = Integer.parseInt(pMap.get("nTreesPerCell"));
-		nInitialBeetlesPerCell = Integer.parseInt(pMap.get("nInitialBeetlesPerCell"));
+		saveFileName = pMap.get("saveFileName");
 		
 		neighborhoodRadius = Double.parseDouble(pMap.get("neighborhoodRadius"));
 		distanceSelf = Double.parseDouble(pMap.get("distanceSelf"));
@@ -49,17 +45,7 @@ public class Parameters {
 		distanceParamB = Double.parseDouble(pMap.get("distanceParamB"));
 		distanceScoreWeight = Double.parseDouble(pMap.get("distanceScoreWeight"));
 		
-		treeRegenerationRate = Integer.parseInt(pMap.get("treeRegenerationRate"));
-		treeAttackTreshold = Integer.parseInt(pMap.get("treeAttackTreshold"));
-		minTreesForAttack = Integer.parseInt(pMap.get("minTreesForAttack"));
-		maxBeetlesPerTree = Integer.parseInt(pMap.get("maxBeetlesPerTree"));
 		beetleReproductionRate = Double.parseDouble(pMap.get("beetleReproductionRate"));
-
-
-		
+		initialBeetlesPerCell = Integer.parseInt(pMap.get("initialBeetlesPerCell"));
 	}
-	
-	
-	
-	
 }

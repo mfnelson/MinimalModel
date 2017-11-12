@@ -2,24 +2,17 @@ package cell;
 
 public class RemoteCell implements Cell {
 
-	int nArrivingBeetles;
+	int nEmergingBeetles = 0;
+	int nArrivingBeetles = 0;
 	
-	
-	//TODO: a stub for now...
-	double occupancyScore = 1d;
-	
-	@Override
-	public void receiveBeetles(int n) {
-		nArrivingBeetles += n;
-	}
+	public void receiveBeetles(int n) {nArrivingBeetles += n;}
 
-	@Override
-	public double getOccupancyScore() {
-		return occupancyScore;
-	}
-
-	public int[] censusDispersingBeetles(){
-		return new int[] {0, nArrivingBeetles};
-	}
+	public int[] censusDispersingBeetles(){return new int[] {nEmergingBeetles, nArrivingBeetles};}
 	
+	// TODO: eventually this will go away once remote cell neighborhoods are
+	// associated with real model instances.
+	public void reset(){
+		nEmergingBeetles = nArrivingBeetles;
+		nArrivingBeetles = 0;
+	}
 }

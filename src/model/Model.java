@@ -1,5 +1,6 @@
 package model;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -10,15 +11,19 @@ import cern.jet.random.Uniform;
 import cern.jet.random.engine.MersenneTwister;
 import cern.jet.random.engine.RandomEngine;
 import neighbors.NeighborhoodTemplate;
+import reporters.ConsoleReporters;
+import reporters.NetCDFReporters;
 import submodels.Dispersal;
+import ucar.ma2.InvalidRangeException;
 
 public class Model {
 
 	public final LocalCell[][] cells;
-	
 	public final List<RemoteCell[][]> remoteCells;
 	
-	Parameters parameters;
+	public Parameters parameters;
+	public NetCDFReporters ncdfReporter;
+	
 	NeighborhoodTemplate neighborhoodTemplate;
 	
 	private RandomEngine re;
@@ -26,9 +31,10 @@ public class Model {
 	
 	public Dispersal dispersal;
 	
-	
 	public Model(String parameterFilename){
 		parameters = new Parameters(parameterFilename);
+		ncdfReporter = new NetCDFReporters(this);
+		ncdfReporter.createFile(this);
 		
 		/* Initialize the random number generator */
 		if(parameters.randomSeed < 0){
@@ -44,24 +50,35 @@ public class Model {
 				parameters.distanceParamB, 
 				parameters.distanceScoreWeight);
 		
+		/* Ideally these would be immutable in the sense that the references to
+		 * specific cells within them shouldn't be allowed to change. */
 		cells = new LocalCell[parameters.nRows][parameters.nCols];
-		
-		dispersal = new Dispersal();
-		
 		remoteCells = new LinkedList<RemoteCell[][]>();
-		
 		buildCells();
 		
+		dispersal = new Dispersal();
+	}
+	
+	public void initializeRandomEngine(int rand){
+		re = new MersenneTwister(rand);
+	}
+	
+	
+	public void simulate() throws IOException, InvalidRangeException{
+		for(int year = 0; year < parameters.nYears; year++){
+			disperseBeetles();
+			ConsoleReporters.censusLocalCells(this);
+			ConsoleReporters.censusRemoteDispersingBeetles(this);
+			ncdfReporter.step(this);
+		}
+		ncdfReporter.saveFile(this);
 	}
 	
 	private void buildCells(){
 		
 		for(int i = 0; i < parameters.nRows; i++)
 		for(int j = 0; j < parameters.nCols; j++){
-			cells[i][j] = new LocalCell(
-					parameters.nTreesPerCell, 
-					parameters.nInitialBeetlesPerCell,
-					i, j, neighborhoodTemplate);
+			cells[i][j] = new LocalCell(parameters.initialBeetlesPerCell);
 		}
 
 		/* Build the remote cell neighborhoods. */
@@ -97,25 +114,20 @@ public class Model {
 		 * are already created.*/
 		for(int row = 0; row < parameters.nRows; row++) for(int col = 0; col < parameters.nCols; col++){
 			cells[row][col].buildNeighborhood(row, col, neighborhoodTemplate, this);
-			cells[row][col].updateScore(neighborhoodTemplate);
 		}
 	}
 	
-
 	public void disperseBeetles(){
+		dispersal.initializeDispersal(this);
 		for(int row = 0; row < parameters.nRows; row++) for(int col = 0; col < parameters.nCols; col++){
-			cells[row][col].emerge();
-			dispersal.disperse(cells[row][col], this);
+			dispersal.disperse(cells[row][col], this, neighborhoodTemplate);
 		}
+		dispersal.finalizeDispersal(this);
 	}
 
-	public void receiveRemoteBeetles(int quadrant, int[][] coords, int[] nBeetles){
-
-	}
+	public void receiveRemoteBeetles(int quadrant, int[][] coords, int[] nBeetles){}
 	
-	public void receiveRemoteOccupancyScores(int quadrant, int[][] coords, double[] scores){
-	
-	}
+	public void receiveRemoteOccupancyScores(int quadrant, int[][] coords, double[] scores){}
 	
 	public Cell getCell(int[] coords){return getCell(coords[0], coords[1]);}
 	public Cell getCell(int row, int column){
@@ -132,7 +144,4 @@ public class Model {
 			return remoteCells.get(quadrant)[quadRow][quadColumn];
 		}
 	}
-	
-	
-	
 }

@@ -2,6 +2,25 @@ package model;
 
 public class Calculator {
 
+	/** Create a sequence of integers with an interval of 1
+	 * 
+	 * @param start starting integer
+	 * @param end ending integer
+	 * @return
+	 */
+	public static int[] seq(int start, int end){
+		int[] sequence = new int[Math.abs(end - start) + 1];
+		
+		int interval = 1;
+		if(start > end) interval = -1;
+		sequence[0] = start;
+		for(int i = 1; i < sequence.length; i++){
+			sequence[i] = sequence[i - 1] + interval;
+		}
+		return sequence;
+	}
+	
+	
 	public static double exponentialDistanceScore(double distance, double dispersalDistParamA, double dispersalDistParamB){
 		return(Math.pow(dispersalDistParamA * distance, -dispersalDistParamB));
 	}
@@ -103,4 +122,16 @@ public class Calculator {
 		int row = coord - column * nColumns;
 		return new int[]{row, column};
 	}
+	
+	
+	public static double[] cumulativeSum(double[] inputArray){
+		double[] outputArray = new double[inputArray.length];
+		double sum = 0;
+		for(int i = 0; i < inputArray.length; i++){
+			sum += inputArray[i];
+			outputArray[i] = sum;
+		}
+		return outputArray;
+	}
+	
 }

@@ -15,6 +15,8 @@ public class NeighborhoodTemplate {
 	/** The results of applying the score weighting function to the unweighted distance scores. */
 	public final double[] weightedDistanceScores;
 	
+	public final double[] cumulativeWeightedDistanceScores;
+	
 	public NeighborhoodTemplate(
 			double neighborhoodRadius, 
 			double distanceSelf, 
@@ -27,7 +29,7 @@ public class NeighborhoodTemplate {
 		distances = buildDistances(cellWidth, distanceSelf);
 		unweightedDistanceScores = Calculator.exponentialDistanceScore(distances, distanceParamA, distanceParamB);
 		weightedDistanceScores = Calculator.normalize(unweightedDistanceScores,	1d - distanceScoreWeight, 1d);
-	
+		cumulativeWeightedDistanceScores = Calculator.cumulativeSum(weightedDistanceScores);
 	}
 	
 	private int[][] buildOffsetCoordinates(double neighborhoodRadius, double cellWidth, double distanceSelf, double distanceParamA, double distanceParamB){

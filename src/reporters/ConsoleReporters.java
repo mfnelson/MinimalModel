@@ -8,17 +8,13 @@ public class ConsoleReporters {
 	
 	public static void censusLocalCells(Model model){
 		
-		int nTrees = 0;
 		int nBeetles = 0;
 		
-		for(LocalCell[] row : model.cells)
-			for(LocalCell cell : row){
-		
-				int[] counts = cell.census();
-				nTrees += counts[0];
-				nBeetles += counts[1];
+		for(int row = 0; row < model.parameters.nRows; row++)
+		for(int col = 0; col < model.parameters.nCols; col++){
+				nBeetles += model.cells[row][col].census();
 			}
-		System.out.println("Total trees = " + nTrees + " Total beetles = " + nBeetles);
+		System.out.println(" Total beetles = " + nBeetles);
 	}
 
 	public static void censusRemoteDispersingBeetles(Model model){

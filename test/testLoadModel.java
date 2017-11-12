@@ -1,10 +1,11 @@
-import static org.junit.Assert.fail;
+import java.io.IOException;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import model.Model;
 import reporters.ConsoleReporters;
+import ucar.ma2.InvalidRangeException;
 
 public class testLoadModel {
 
@@ -18,20 +19,14 @@ public class testLoadModel {
 	}
 
 	@Test
-	public void test() {
+	public void test() throws IOException, InvalidRangeException {
 
 		ConsoleReporters.censusLocalCells(model);
 		ConsoleReporters.censusLocalDispersingBeetles(model);
 		ConsoleReporters.censusRemoteDispersingBeetles(model);
-
-		for(int i = 0; i < 1000; i++){
-
-			model.disperseBeetles();
-			ConsoleReporters.censusLocalCells(model);
-			ConsoleReporters.censusLocalDispersingBeetles(model);
-			ConsoleReporters.censusRemoteDispersingBeetles(model);
-		}
-		fail("Not yet implemented");
+		model.initializeRandomEngine(222);
+		model.simulate();
+		
 	}
 
 }
