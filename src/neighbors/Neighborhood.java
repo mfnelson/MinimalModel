@@ -19,8 +19,13 @@ public class Neighborhood {
 		buildNeighbors(template, row, col, model);
 	}
 	
+	/** Populate the list of neighboring cells with references to
+	 *  the appropriate cells.
+	 * @param template
+	 * @param row
+	 * @param col
+	 * @param model */
 	private void buildNeighbors(NeighborhoodTemplate template, int row, int col, Model model){
-		
 		/* Build coordinates */
 		for(int i = 0; i < template.distances.length; i++){
 			int offsetRow = row + template.offsetCoordinates[i][0];
@@ -29,6 +34,8 @@ public class Neighborhood {
 		}
 	}
 	
+	/** Randomly select a cell from the neighborhood.  The likelihood
+	 *  of being selected is weighted by the distance from the central cell */
 	public Cell getWeightedRandomCell(Uniform unif, NeighborhoodTemplate template){
 		double rand = unif.nextDoubleFromTo(0d, template.cumulativeWeightedDistanceScores[template.unweightedDistanceScores.length - 1]);
 		

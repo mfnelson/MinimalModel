@@ -36,7 +36,7 @@ public class NeighborhoodTemplate {
 		
 		int gridMaxDim = 2 + (int)Math.ceil(neighborhoodRadius / cellWidth);
 		
-		int[][] tempOffsets = new int[gridMaxDim * gridMaxDim][2];
+		int[][] tempOffsets = new int[(1 + 2 * gridMaxDim) * (1 + 4 * gridMaxDim)][2];
 		int count = 0;
 		
 		for(int col = -gridMaxDim; col <= gridMaxDim; col++)

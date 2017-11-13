@@ -5,7 +5,7 @@ import model.Model;
 
 public class ConsoleReporters {
 
-	
+	/** Get the total count of overwintering beetles. */
 	public static void censusLocalCells(Model model){
 		
 		int nBeetles = 0;
@@ -14,9 +14,10 @@ public class ConsoleReporters {
 		for(int col = 0; col < model.parameters.nCols; col++){
 				nBeetles += model.cells[row][col].census();
 			}
-		System.out.println(" Total beetles = " + nBeetles);
+		System.out.println(" Total overwintering beetles = " + nBeetles);
 	}
 
+	/** Get the total count of arriving beetles for eacch remote quadrant. */
 	public static void censusRemoteDispersingBeetles(Model model){
 		int[] quadrantCounts = new int[8];
 		
@@ -26,10 +27,11 @@ public class ConsoleReporters {
 				quadrantCounts[quadrant] += model.remoteCells.get(quadrant)[row][col].censusDispersingBeetles()[1];
 			}
 			
-			System.out.println("Quadrant " + quadrant + " arriving beetles = " + quadrantCounts[quadrant]);
+			System.out.println("Quadrant " + quadrant + " beetles arriving at remote cells = " + quadrantCounts[quadrant]);
 		}
 	}
 	
+	/** Get the total counts of beetles arriving at and dispersing from the local cells. */
 	public static void censusLocalDispersingBeetles(Model model){
 		int nEmerging = 0;
 		int nArriving = 0;
