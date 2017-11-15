@@ -131,7 +131,7 @@ public class Model {
 		}
 	}
 
-	/** Initialize the dispersal season by staging overwintering beetles for emergence and dispersal. <br?
+	/** Initialize the dispersal season by staging overwintering beetles for emergence and dispersal. <br>
 	 *  Loop through all the model's grid cells and disperse beetles to target cells. */
 	public void disperseBeetles(){
 		dispersal.initializeDispersal(this);
@@ -148,16 +148,10 @@ public class Model {
 		int minCol = quadrantCoords.get(remoteQuadrant)[2];
 		int maxCol = quadrantCoords.get(remoteQuadrant)[3];
 		
-		int sum = 0;
 		for(int row = minRow; row <= maxRow; row++)
 		for(int col = minCol; col <= maxCol; col ++){
 			cells[row][col].receiveBeetles(nBeetles[row - minRow][col - minCol]);
-			sum += nBeetles[row - minRow][col - minCol];
 		}
-		
-		
-//		System.out.println(sum + " remote beetles received from remote model's quadrant " + remoteQuadrant);
-//		System.out.print("");
 	}
 
 	/** Return an array of beetle counts for a neighboring model to add to the
@@ -171,13 +165,9 @@ public class Model {
 		int nCols = remoteCells.get(quadrant)[0].length;
 		int[][] toSend = new int[nRows][nCols];
 		
-		int sum = 0;
-		
 		for(int row = 0; row < nRows; row++) for(int col = 0; col < nCols; col++){
 			toSend[row][col] = remoteCells.get(quadrant)[row][col].censusDispersingBeetles()[1];
-			sum += remoteCells.get(quadrant)[row][col].censusDispersingBeetles()[1];
 		}
-//		System.out.println(sum + " beetles sent to remote model from quadrant " + quadrant);
 		
 		return toSend;
 	}

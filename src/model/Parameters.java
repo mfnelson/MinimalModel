@@ -12,7 +12,8 @@ public class Parameters {
 	public final int nCols;
 	public final int nYears;
 	
-	public final String saveFileName;
+	/* Keep this mutable to make saving results from replicate runs easier. */
+	public String saveFileName;
 	
 	public final double neighborhoodRadius;
 	public final double cellWidth;

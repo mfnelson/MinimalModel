@@ -228,4 +228,20 @@ public class Calculator {
 		return outputArray;
 	}
 	
+	
+	public static int[] getQuadrantOffsetCoords(int quadrant){
+		int[] out = new int[2];
+		
+		switch(quadrant){
+		case 0: out[0] =  1; out[1] = -1; break;
+		case 1:	out[0] =  1; out[1] =  0; break; 
+		case 2: out[0] =  1; out[1] =  1; break;
+		case 3: out[0] =  0; out[1] =  1; break;
+		case 4: out[0] = -1; out[1] =  1; break;
+		case 5: out[0] = -1; out[1] =  0; break;
+		case 6: out[0] = -1; out[1] = -1; break;
+		default: out[0] =  0; out[1] = -1; break;
+		}
+		return out;
+	}
 }

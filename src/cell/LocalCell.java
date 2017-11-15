@@ -69,6 +69,8 @@ public class LocalCell implements Cell{
 		nArrivingBeetles += n;
 	}
 	
+	/** Increment the number of emerging beetles by n beetles. 
+	 * @param n number of beetles to add	 */
 	public void addEmergingBeetles(int n){
 		nEmergingBeetles += n;
 	}

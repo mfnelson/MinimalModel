@@ -21,9 +21,9 @@ public class Dispersal {
 				model.remoteCells.get(quadrant)[row][col].reset();		
 	}
 	
-	/** Send beetles from a specified cell to a randomly chosen neighbor
-	 * of the specified cell.
-	 * @param cell  The cell that beetles will disperse from
+	/** Send emerging beetles from the input cell to a randomly chosen neighbor.
+	 * 	The neighbor's tally of arriving beetles is incremented by the number of beetles sent.
+	 * @param cell  The cell that will send beetles to a recipient. 
 	 * @param model 
 	 * @param template  */
 	public void disperse(LocalCell cell, Model model, NeighborhoodTemplate template){
