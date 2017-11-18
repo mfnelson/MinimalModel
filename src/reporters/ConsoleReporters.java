@@ -22,9 +22,9 @@ public class ConsoleReporters {
 		int[] quadrantCounts = new int[8];
 		
 		for(int quadrant = 0; quadrant < 8; quadrant++){
-			for(int row = 0; row < model.remoteCells.get(quadrant).length; row++)
-			for(int col = 0; col < model.remoteCells.get(quadrant)[0].length; col++){
-				quadrantCounts[quadrant] += model.remoteCells.get(quadrant)[row][col].censusDispersingBeetles()[1];
+			for(int row = 0; row < model.remoteSectors.get(quadrant).length; row++)
+			for(int col = 0; col < model.remoteSectors.get(quadrant)[0].length; col++){
+				quadrantCounts[quadrant] += model.remoteSectors.get(quadrant)[row][col].censusDispersingBeetles()[1];
 			}
 			
 			System.out.println("Quadrant " + quadrant + " beetles arriving at remote cells = " + quadrantCounts[quadrant]);

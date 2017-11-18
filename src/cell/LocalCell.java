@@ -1,5 +1,6 @@
 package cell;
 
+import cern.jet.random.Uniform;
 import model.Model;
 import neighbors.Neighborhood;
 import neighbors.NeighborhoodTemplate;
@@ -37,8 +38,8 @@ public class LocalCell implements Cell{
 	 * @param model
 	 * @param template
 	 * @return */
-	public Cell getRandomWeightedRecipient(Model model, NeighborhoodTemplate template){
-		return neighborhood.getWeightedRandomCell(model.unif, template);
+	public Cell getRandomWeightedRecipient(Uniform unif, NeighborhoodTemplate template){
+		return neighborhood.getWeightedRandomCell(unif, template);
 	}
 	
 	/** Return the number of emerging beetles.  Reset the count of emerging beetles to zero. */

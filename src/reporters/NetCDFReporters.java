@@ -110,7 +110,7 @@ public class NetCDFReporters {
 		dimsEastWestRemote.add(remoteWidthDimension);
 		dimsEastWestRemote.add(timeStepCoordinateDimension);
 		
-		localBeetleVariable = dataFile.addVariable(null, "arrivingBeetles", DataType.INT, dimsCells);
+		localBeetleVariable = dataFile.addVariable(null, "beetles", DataType.INT, dimsCells);
 		
 		// TODO add remote beetle variables
 		

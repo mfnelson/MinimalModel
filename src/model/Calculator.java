@@ -3,6 +3,8 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
+import cell.RemoteCell;
+
 public class Calculator {
 
 	/** Create a sequence of integers with an interval of 1
@@ -68,12 +70,12 @@ public class Calculator {
 	 * @return coordinates, local coordinates to which to receive beetles from remote models grids.
 	 * 				Indexed by the local quadrant. 
 	 * 			i.e. index 0 represents the coords of the local NW corner and the remote model's quadrant 4.	 */
-	public static List<int[]> getLocalCoordsFromRemoteQuadrant(Model model){
+	public static List<int[]> getLocalSectorCoordsFromRemoteSector(Model model){
 		List<int[]> quadrantCoordsOut = new ArrayList<int[]>(8);
 		
 		int nRows = model.parameters.nRows;
 		int nCols = model.parameters.nCols;
-		int quadWidth = model.remoteQuadrantMaxWidth;
+		int quadWidth = model.remoteSectorWidth;
 		
 		int rowMinSouth = 0;
 		int rowMaxSouth = quadWidth - 1;
@@ -104,6 +106,35 @@ public class Calculator {
 		return quadrantCoordsOut;
 	}
 	
+	
+	/** Build an array of RemoteCells to populate a model's sectors. */
+	public static RemoteCell[][] buildRemoteSector(int sectorWidth, int sector, int nRows, int nCols){
+		int nRow = 0;
+		int nCol = 0;
+		/* If the sector is diagonal, it is a square based on the 
+		 * neighborhood radius */
+		if(sector % 2 == 0){
+			nRow = nCol = sectorWidth;
+		} else if(sector == 1 | sector == 5){
+			/* North and south neighborhoods. */
+			nRow = sectorWidth;
+			nCol = nCols;
+		} else {
+			/* East and west neighborhoods. */
+			nRow = nRows;
+			nCol = sectorWidth;
+		}
+
+		RemoteCell[][] toAdd = new RemoteCell[nRow][nCol];
+
+		for(int row = 0; row < nRow; row++) for(int col = 0; col < nCol; col++){	
+			toAdd[row][col] = new RemoteCell();
+		}	
+		
+		return toAdd;
+	}
+	
+	
 	/** Calculate the local coordinate limits to receive beetles from remote models.
 	 * 
 	 * @param quadrant the  quadrant number
@@ -116,7 +147,7 @@ public class Calculator {
 		
 		int nRows = model.parameters.nRows;
 		int nCols = model.parameters.nCols;
-		int quadWidth = model.remoteQuadrantMaxWidth;
+		int quadWidth = model.remoteSectorWidth;
 		
 		int rowMinSouth = 0;
 		int rowMaxSouth = quadWidth;
@@ -150,29 +181,28 @@ public class Calculator {
 	
 	
 	
-	/** Determine which quadrant of remote cells an input row and column number belong to. */
-	public static int determineQuadrant(int row, int column, int nRows, int nCols){
-		if(row < 0){
-			if(column >= nCols) 
-				return 4;
-			else if(column < 0) 
-				return 6;
-			else 
-				return 5;
-		} else 
-			if(row >= nRows)
-		{
-			if(column >= nCols) 
-				return 2;
-			else if(column < 0) 
-				return 0;
-			else 
-				return 1;
-		} else 
-			if(column < 0) 
-				return 7;
-			else 
-  				return 3;
+	/** Determine which sector an input row and column number belong to. */
+	public static int determineRemoteSector(int row, int col, int nRows, int nCols){
+		
+		/* If the coordinate is north of the model grid: */
+		if(row >= nRows){
+			if(col < 0) return 0;
+			else if(col >= nCols) return 2;
+			else return 1;
+		}
+		
+		/* If the coordinate is south of the model grid: */
+		else if(row < 0){
+			if(col < 0) return 6;
+			else if(col > nCols) return 4;
+			else return 5;
+		}
+		
+		/* If the coordinate is the easter edge */
+		else if(col >= nCols) return 3;
+		
+		/* If the coordinate is the western edge: */
+		return 7;
 	}
 
 	/** Return the width, in cells, of the neighborhoods of remote cells surrounding the model's grid of local cells. */
@@ -180,44 +210,28 @@ public class Calculator {
 		return (int)Math.floor(neighborhoodRadius / cellWidth);
 	}
 	
-	/**
-	 * Note:	We could use the mod operator here to do this in one line, but in another language
-	 * 			it might handle negative numbers differently from Java does things.
-	 * @param coord
-	 * @param nCoords
-	 * @param quadrant
-	 * @param neighborhoodRadius
-	 * @param cellWidth
-	 * @return
-	 */
-	public static int determineQuadrantCoordinate(int coord, int nCoords, double neighborhoodRadius, double cellWidth){
-		int maxWidth = maxLocalNeighborhoodWidth(neighborhoodRadius, cellWidth);
-		if(coord >= nCoords){
-			return coord - nCoords;
+	/** Return a coordinate transformed into the coordinate system of a remote sector.
+	 * @param coord The row or column coordinate
+	 * @param maxCoord The max value the coordinate can be within the main model grid.
+	 * @param sectorWidth the width of the remote sector
+	 * @return a coordinate in the coordinate system of the remote sector	 */
+	public static int determineSectorCoordinate(int coord, int maxCoord, int sectorWidth){
+		/* If the coordinate is greater than the size of main model grid: */
+		if(coord >= maxCoord){
+			return coord - maxCoord;
+		/* If the coordinate is negative */
 		} else if(coord < 0){
-			return maxWidth + coord;
+			return sectorWidth + coord;
+		/* If the coordinate falls within the range of the main model grid. */
 		} else return coord;
 	}
 
-	public static int map2Dto1DCoords(int row, int column, int nRows, int nColumns){
-		return column + row * nColumns;
-	}
-	
-	public static int map1DToColumn(int coord, int nColumns){
-		return coord % nColumns;
-	}
-	
-	public static int map1DToRow(int coord, int column, int nColumns){
-		return coord - column * nColumns;
-	}
 
-	public static int[] map1Dto2DCoords(int coord, int nColumns){
-		int column = coord % nColumns;
-		int row = coord - column * nColumns;
-		return new int[]{row, column};
-	}
 	
-	
+	/** Calculate the cumulative sums of a 1D array of doubles.
+	 * @param inputArray the doubles to sum
+	 * @return an array in which each element is the sum 
+	 * of all elements of the input array with lower index */
 	public static double[] cumulativeSum(double[] inputArray){
 		double[] outputArray = new double[inputArray.length];
 		double sum = 0;
@@ -229,19 +243,31 @@ public class Calculator {
 	}
 	
 	
-	public static int[] getQuadrantOffsetCoords(int quadrant){
+	/** Determine which model, in a rectangular grid of models, a group of
+	 * 	beetles should be sent to.
+	 * 
+	 * @param remoteSector the remote sector code for the sending model
+	 * @param nModelRows the number of rows of models in the simulation grid
+	 * @param nModelCols the number of columns of models in the simulation grid
+	 * @return The coordinates of the model object to receive the beetles. */
+	public static int[] getRecipientModelOffsetCoords(int remoteSector, int nModelRows, int nModelCols){
+		int[] offset = new int[2];
+		switch(remoteSector){
+		case 0:		offset[0] =  1; offset[1] = -1; break;	/* NW sector */
+		case 1: 	offset[0] =  1; offset[1] =  0; break;	/*  N sector */
+		case 2:		offset[0] =  1; offset[1] =  1; break;	/* NE sector */
+		case 3:		offset[0] =  0; offset[1] =  1; break;	/*  E sector */
+		case 4:		offset[0] = -1; offset[1] =  1; break;	/* SE sector */
+		case 5:		offset[0] = -1; offset[1] =  0; break;	/*  S sector */
+		case 6:		offset[0] = -1; offset[1] = -1; break;	/* SW sector */
+		default:	offset[0] =  0; offset[1] = -1; break;	/*  W sector */
+		}
+		
 		int[] out = new int[2];
 		
-		switch(quadrant){
-		case 0: out[0] =  1; out[1] = -1; break;
-		case 1:	out[0] =  1; out[1] =  0; break; 
-		case 2: out[0] =  1; out[1] =  1; break;
-		case 3: out[0] =  0; out[1] =  1; break;
-		case 4: out[0] = -1; out[1] =  1; break;
-		case 5: out[0] = -1; out[1] =  0; break;
-		case 6: out[0] = -1; out[1] = -1; break;
-		default: out[0] =  0; out[1] = -1; break;
-		}
+		out[0] = (offset[0] + nModelRows) % nModelRows;
+		out[1] = (offset[1] + nModelCols) % nModelCols;
+		
 		return out;
 	}
 }

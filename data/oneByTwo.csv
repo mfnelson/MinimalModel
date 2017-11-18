@@ -1,0 +1,15 @@
+randomSeed,1
+nRows,7
+nCols,7
+nYears,1000
+saveFileName,output/test.nc
+neighborhoodRadius,150
+cellWidth,100
+distanceSelf,1000
+distanceParamA,1
+distanceParamB,1.1
+distanceScoreWeight,0.9
+beetleReproductionRate,1
+initialBeetlesPerCell,0
+nGridRows,1
+nGridCols,2

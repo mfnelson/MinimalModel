@@ -19,8 +19,22 @@ import ucar.ma2.InvalidRangeException;
 public class Model {
 
 	public final LocalCell[][] cells;
-	public final List<RemoteCell[][]> remoteCells;
-	public final int remoteQuadrantMaxWidth;
+	
+	
+	/**
+	 * list indices: <br>
+	 * 	0:	NW sector
+	 * 	1:	 N sector
+	 * 	2:	NE sector
+	 * 	3:	 E sector
+	 *  4:	SE sector
+	 *  5:	 S sector
+	 *  6:	SW sector
+	 *  7:	 W sector
+	 * 
+	 */
+	public final List<RemoteCell[][]> remoteSectors;
+	public final int remoteSectorWidth;
 
 	public Parameters parameters;
 	public NetCDFReporters ncdfReporter;
@@ -32,23 +46,35 @@ public class Model {
 
 	public Dispersal dispersal;
 
-	/** row and column min/max coords.
+	/** row and column min/max coords.<br>
 	 * Convenience fields, so that we don't have 
 	 * to re-calculate them multiple times.
-	 * index 0 = row min
-	 * index 1 = row max
-	 * index 2 = col min
-	 * index 3 = col max*/
-	private List<int[]> quadrantCoords;
+	 * 
+	 * list indices:<br>
+	 * index 0: SE corner<br>
+	 * index 1:  S edge<br>
+	 * index 2:	SW corner<br>
+	 * idnex 3:  W edge<br>
+	 * index 4: NW corner<br>
+	 * index 5:  N edge<br>
+	 * index 6: NE corner<br>
+	 * index 7:  E edge<br>
+	 * 
+	 * int[] indices:<br>
+	 * index 0 = row min<br>
+	 * index 1 = row max<br>
+	 * index 2 = col min<br>
+	 * index 3 = col max<br>*/
+	private List<int[]> localSectorCellCoords;
 
 	public Model(String parameterFilename){
 		parameters = new Parameters(parameterFilename);
 		ncdfReporter = new NetCDFReporters(this);
 		ncdfReporter.createFile(this);
 
-		remoteQuadrantMaxWidth = Calculator.maxLocalNeighborhoodWidth(parameters.neighborhoodRadius, parameters.cellWidth);
+		remoteSectorWidth = Calculator.maxLocalNeighborhoodWidth(parameters.neighborhoodRadius, parameters.cellWidth);
 
-		quadrantCoords = Calculator.getLocalCoordsFromRemoteQuadrant(this);
+		localSectorCellCoords = Calculator.getLocalSectorCoordsFromRemoteSector(this);
 
 		/* Initialize the random number generator */
 		if(parameters.randomSeed < 0){
@@ -67,7 +93,7 @@ public class Model {
 		/* Ideally these would be immutable in the sense that the references to
 		 * specific cells within them shouldn't be allowed to change. */
 		cells = new LocalCell[parameters.nRows][parameters.nCols];
-		remoteCells = new ArrayList<RemoteCell[][]>();
+		remoteSectors = new ArrayList<RemoteCell[][]>();
 		buildCells();
 
 		dispersal = new Dispersal();
@@ -75,7 +101,6 @@ public class Model {
 
 	/** Reinitialize the model's random number generator with the given input int. */
 	public void initializeRandomEngine(int rand){re = new MersenneTwister(rand);	}
-
 
 	public void simulate() throws IOException, InvalidRangeException{
 		for(int year = 0; year < parameters.nYears; year++){
@@ -96,31 +121,9 @@ public class Model {
 				cells[i][j] = new LocalCell(parameters.initialBeetlesPerCell);
 			}
 
-		/* Build the remote cell neighborhoods. */
-		for(int quadrant = 0; quadrant < 8; quadrant ++){
-
-			int nRow = 0;
-			int nCol = 0;
-			/* If the quadrant is diagonal, it is a square based on the 
-			 * neighborhood radius */
-			if(quadrant % 2 == 0){
-				nRow = nCol =remoteQuadrantMaxWidth;
-			} else if(quadrant == 1 | quadrant == 5){
-				/* North and south neighborhoods. */
-				nRow =remoteQuadrantMaxWidth;
-				nCol = parameters.nCols;
-			} else {
-				/* East and west neighborhoods. */
-				nRow = parameters.nRows;
-				nCol =remoteQuadrantMaxWidth;
-			}
-
-			RemoteCell[][] toAdd = new RemoteCell[nRow][nCol];
-
-			for(int row = 0; row < nRow; row++) for(int col = 0; col < nCol; col++){	
-				toAdd[row][col] = new RemoteCell();
-			}
-			remoteCells.add(toAdd);
+		/* Build the remote sectors. */
+		for(int sector = 0; sector < 8; sector ++){
+			remoteSectors.add(Calculator.buildRemoteSector(remoteSectorWidth, sector, parameters.nRows, parameters.nCols));
 		}
 
 		/* Build the neighborhoods for each local cell. 
@@ -131,22 +134,29 @@ public class Model {
 		}
 	}
 
-	/** Initialize the dispersal season by staging overwintering beetles for emergence and dispersal. <br>
-	 *  Loop through all the model's grid cells and disperse beetles to target cells. */
-	public void disperseBeetles(){
+	/** Initialize the dispersal season by staging overwintering beetles for emergence */
+	public void initilizeDispersal(){
 		dispersal.initializeDispersal(this);
+	}
+	
+	/**  Loop through all the model's grid cells and disperse beetles to target cells. */
+	public void disperseBeetles(){
 		for(int row = 0; row < parameters.nRows; row++) for(int col = 0; col < parameters.nCols; col++){
-			dispersal.disperse(cells[row][col], this, neighborhoodTemplate);
+			dispersal.disperse(cells[row][col], unif, neighborhoodTemplate);
 		}
 	}
 
-	/** Allocate arriving beetles from a neighboring model's set of remote 
-	 *  cells to the appropriate local cells in this model's grid. */
-	public void receiveBeetlesFromRemote(int remoteQuadrant, int[][] nBeetles){
-		int minRow = quadrantCoords.get(remoteQuadrant)[0];
-		int maxRow = quadrantCoords.get(remoteQuadrant)[1];
-		int minCol = quadrantCoords.get(remoteQuadrant)[2];
-		int maxCol = quadrantCoords.get(remoteQuadrant)[3];
+	/** Receive an array of beetles being sent from a remote model.<br>
+	 *  Allocate the incoming beetles to the appropriate local cells.
+	 * 
+	 * @param sectorCode the number of the incoming sector, in relation to the remote model.
+	 * @param nBeetles array of incoming beetle counts
+	 */
+	public void receiveBeetlesFromRemoteSector(int sectorCode, int[][] nBeetles){
+		int minRow = localSectorCellCoords.get(sectorCode)[0];
+		int maxRow = localSectorCellCoords.get(sectorCode)[1];
+		int minCol = localSectorCellCoords.get(sectorCode)[2];
+		int maxCol = localSectorCellCoords.get(sectorCode)[3];
 		
 		for(int row = minRow; row <= maxRow; row++)
 		for(int col = minCol; col <= maxCol; col ++){
@@ -156,17 +166,17 @@ public class Model {
 
 	/** Return an array of beetle counts for a neighboring model to add to the
 	 *  corresponding local cells in its grid.
-	 * @param quadrant
+	 * @param sector the number of the sector to which to send beetles, in reference to the local model.
 	 * @param nBeetles
 	 * @return	 */
-	public int[][] sendLocalBeetlesToRemote(int quadrant){
+	public int[][] stageBeetlesForRemoteSector(int sector){
 		
-		int nRows = remoteCells.get(quadrant).length;
-		int nCols = remoteCells.get(quadrant)[0].length;
+		int nRows = remoteSectors.get(sector).length;
+		int nCols = remoteSectors.get(sector)[0].length;
 		int[][] toSend = new int[nRows][nCols];
 		
 		for(int row = 0; row < nRows; row++) for(int col = 0; col < nCols; col++){
-			toSend[row][col] = remoteCells.get(quadrant)[row][col].censusDispersingBeetles()[1];
+			toSend[row][col] = remoteSectors.get(sector)[row][col].censusDispersingBeetles()[1];
 		}
 		
 		return toSend;
@@ -176,17 +186,16 @@ public class Model {
 	public Cell getCell(int[] coords){return getCell(coords[0], coords[1]);}
 	/** Return the cell (local or remote) located at the specified row and column coordinates. */
 	public Cell getCell(int row, int column){
-
 		/* If the cell is local */
 		if(row >= 0 & row < parameters.nRows & column >= 0 & column < parameters.nCols){
 			return cells[row][column];
 		} else
 		{
-			/* Otherwise determine the quadrant. */
-			int quadrant = Calculator.determineQuadrant(row, column, parameters.nRows, parameters.nCols);
-			int quadRow = Calculator.determineQuadrantCoordinate(row, parameters.nRows, parameters.neighborhoodRadius, parameters.cellWidth);
-			int quadColumn = Calculator.determineQuadrantCoordinate(column, parameters.nCols, parameters.neighborhoodRadius, parameters.cellWidth);
-			return remoteCells.get(quadrant)[quadRow][quadColumn];
+			/* Otherwise determine the sector. */
+			int sector = Calculator.determineRemoteSector(row, column, parameters.nRows, parameters.nCols);
+			int sectorRow = Calculator.determineSectorCoordinate(row, parameters.nRows, remoteSectorWidth);
+			int sectorColumn = Calculator.determineSectorCoordinate(column, parameters.nCols, remoteSectorWidth);
+			return remoteSectors.get(sector)[sectorRow][sectorColumn];
 		}
 	}
 

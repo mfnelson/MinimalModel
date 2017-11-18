@@ -26,27 +26,29 @@ public class Parameters {
 	public final double beetleReproductionRate;
 	public final int initialBeetlesPerCell;
 	
+	public final Map<String, String> parameterMap;
+	
 	public Parameters(String parameterFilename){
 		
-		Map<String, String> pMap = CSVUtils.csvToHashMap(parameterFilename);
+		parameterMap = CSVUtils.csvToHashMap(parameterFilename);
 		
-		randomSeed = Integer.parseInt(pMap.get("randomSeed"));
+		randomSeed = Integer.parseInt(parameterMap.get("randomSeed"));
 		
-		nRows = Integer.parseInt(pMap.get("nRows"));
-		nCols = Integer.parseInt(pMap.get("nCols"));
-		nYears = Integer.parseInt(pMap.get("nYears"));
+		nRows = Integer.parseInt(parameterMap.get("nRows"));
+		nCols = Integer.parseInt(parameterMap.get("nCols"));
+		nYears = Integer.parseInt(parameterMap.get("nYears"));
 		
-		saveFileName = pMap.get("saveFileName");
+		saveFileName = parameterMap.get("saveFileName");
 		
-		neighborhoodRadius = Double.parseDouble(pMap.get("neighborhoodRadius"));
-		distanceSelf = Double.parseDouble(pMap.get("distanceSelf"));
-		cellWidth = Double.parseDouble(pMap.get("cellWidth"));
+		neighborhoodRadius = Double.parseDouble(parameterMap.get("neighborhoodRadius"));
+		distanceSelf = Double.parseDouble(parameterMap.get("distanceSelf"));
+		cellWidth = Double.parseDouble(parameterMap.get("cellWidth"));
 		
-		distanceParamA = Double.parseDouble(pMap.get("distanceParamA"));
-		distanceParamB = Double.parseDouble(pMap.get("distanceParamB"));
-		distanceScoreWeight = Double.parseDouble(pMap.get("distanceScoreWeight"));
+		distanceParamA = Double.parseDouble(parameterMap.get("distanceParamA"));
+		distanceParamB = Double.parseDouble(parameterMap.get("distanceParamB"));
+		distanceScoreWeight = Double.parseDouble(parameterMap.get("distanceScoreWeight"));
 		
-		beetleReproductionRate = Double.parseDouble(pMap.get("beetleReproductionRate"));
-		initialBeetlesPerCell = Integer.parseInt(pMap.get("initialBeetlesPerCell"));
+		beetleReproductionRate = Double.parseDouble(parameterMap.get("beetleReproductionRate"));
+		initialBeetlesPerCell = Integer.parseInt(parameterMap.get("initialBeetlesPerCell"));
 	}
 }
