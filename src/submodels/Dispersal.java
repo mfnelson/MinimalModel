@@ -33,6 +33,8 @@ public class Dispersal {
 		if(cell.censusDispersingBeetles()[0] > 0){
 			Cell recipient = cell.getRandomWeightedRecipient(unif, template);
 			recipient.receiveBeetles(cell.sendBeetles());
+			int a = 0;
+			a ++;
 		}
 	}
 	

@@ -66,13 +66,12 @@ public class LocalCell implements Cell{
 	/** Increment the number of arriving beetles.
 	 * @param n the number of arriving beetles */
 	@Override
-	public void receiveBeetles(int n) {
-		nArrivingBeetles += n;
-	}
+	public void receiveBeetles(int n) {nArrivingBeetles += n;}
 	
 	/** Increment the number of emerging beetles by n beetles. 
 	 * @param n number of beetles to add	 */
-	public void addEmergingBeetles(int n){
-		nEmergingBeetles += n;
-	}
+	public void addEmergingBeetles(int n){nEmergingBeetles += n;}
+	
+	/** Add beetles to the count of overwintering beetles. */
+	public void addBeetles(int n){nBeetles += n;}
 }

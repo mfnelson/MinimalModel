@@ -250,7 +250,7 @@ public class Calculator {
 	 * @param nModelRows the number of rows of models in the simulation grid
 	 * @param nModelCols the number of columns of models in the simulation grid
 	 * @return The coordinates of the model object to receive the beetles. */
-	public static int[] getRecipientModelOffsetCoords(int remoteSector, int nModelRows, int nModelCols){
+	public static int[] getRecipientModelOffsetCoords(int remoteSector, int row, int col, int nModelRows, int nModelCols){
 		int[] offset = new int[2];
 		switch(remoteSector){
 		case 0:		offset[0] =  1; offset[1] = -1; break;	/* NW sector */
@@ -265,8 +265,8 @@ public class Calculator {
 		
 		int[] out = new int[2];
 		
-		out[0] = (offset[0] + nModelRows) % nModelRows;
-		out[1] = (offset[1] + nModelCols) % nModelCols;
+		out[0] = (offset[0] + row + nModelRows) % nModelRows;
+		out[1] = (offset[1] + col + nModelCols) % nModelCols;
 		
 		return out;
 	}

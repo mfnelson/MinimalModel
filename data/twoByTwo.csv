@@ -1,7 +1,7 @@
 randomSeed,1
 nRows,7
 nCols,5
-nYears,2
+nYears,1000
 saveFileName,output/test.nc
 neighborhoodRadius,150
 cellWidth,100

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import model.Calculator;
 import model.Model;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
@@ -111,11 +110,6 @@ public class NetCDFReporters {
 		dimsEastWestRemote.add(timeStepCoordinateDimension);
 		
 		localBeetleVariable = dataFile.addVariable(null, "beetles", DataType.INT, dimsCells);
-		
-		// TODO add remote beetle variables
-		
-		
-		
 	}
 
 	public void createArrays(Model model){
