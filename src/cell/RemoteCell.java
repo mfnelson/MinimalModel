@@ -2,7 +2,10 @@ package cell;
 
 public class RemoteCell implements Cell {
 
+	/** Count of beetles arriving from other cells. */
 	int nArrivingBeetles = 0;
+	/** Attractiveness, based on cell capacity and current occupancy. */
+	double attractiveness = 0d;
 	
 	public void receiveBeetles(int n) {nArrivingBeetles += n;}
 

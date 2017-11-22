@@ -11,3 +11,4 @@ distanceParamB,1.1
 distanceScoreWeight,0.9
 beetleReproductionRate,1
 initialBeetlesPerCell,0
+nDispersalPackets,3
