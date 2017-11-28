@@ -7,6 +7,11 @@ import cell.RemoteCell;
 
 public class Calculator {
 
+	
+	public static double calculateAttractiveness(int nTrees, int nBeetles, int maxBeetlesPerTree){
+		int maxCapacity = nTrees * maxBeetlesPerTree;
+	}
+	
 	/** Create a sequence of integers with an interval of 1
 	 * 
 	 * @param start starting integer
@@ -47,6 +52,12 @@ public class Calculator {
 		return scores;
 	}
 
+	/** Transform a 1D array of doubles into a new 1D array of doubles
+	 *  with values between the input min and max values.
+	 * @param input the original 1D array
+	 * @param min minimum value for the output array
+	 * @param max maximum value for the output array
+	 * @return	 */
 	public static double[] normalize(double[] input, double min, double max){
 		double[] output = new double[input.length];
 

@@ -10,6 +10,9 @@ public class LocalCell implements Cell{
 	/** Count of overwintering beetles. */
 	private int nBeetles = 0;
 	
+	/** Count of living trees. */
+	int nTrees = 0;
+	
 	/** Attractiveness, based on cell capacity and current occupancy. */
 	double attractiveness = 0;
 	

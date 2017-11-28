@@ -28,9 +28,14 @@ public class Parameters {
 	public final double beetleReproductionRate;
 	public final int initialBeetlesPerCell;
 	
+	public final int nTreesPerCell;
 	
+	public final double scoreWeightAttractiveness;
+	public final double scoreWeightDistance;
 	
 	public final Map<String, String> parameterMap;
+	
+	
 	
 	public Parameters(String parameterFilename){
 		
@@ -56,5 +61,10 @@ public class Parameters {
 		
 		beetleReproductionRate = Double.parseDouble(parameterMap.get("beetleReproductionRate"));
 		initialBeetlesPerCell = Integer.parseInt(parameterMap.get("initialBeetlesPerCell"));
+		
+		nTreesPerCell = Integer.parseInt(parameterMap.get("nTreesPerCell"));
+ 
+		scoreWeightAttractiveness = Double.parseDouble(parameterMap.get("scoreWeightAttractiveness"));
+		scoreWeightDistance = Double.parseDouble(parameterMap.get("scoreWeightDistance"));
 	}
 }

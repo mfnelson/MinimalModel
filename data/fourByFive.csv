@@ -1,6 +1,6 @@
 randomSeed,-1
-nRows,10
-nCols,8
+nRows,20
+nCols,16
 nYears,1000
 saveFileName,output/test.nc
 neighborhoodRadius,150
@@ -13,3 +13,8 @@ beetleReproductionRate,1
 initialBeetlesPerCell,1
 nGridRows,4
 nGridCols,5
+nDispersalPackets,1
+maxBeetlesPerTree,10
+nTreesPerCell,10
+scoreWeightAttractiveness,1
+scoreWeightDistance,1
