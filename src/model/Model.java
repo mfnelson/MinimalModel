@@ -142,7 +142,7 @@ public class Model {
 	/**  Loop through all the model's grid cells and disperse beetles to target cells. */
 	public void disperseBeetles(){
 		for(int row = 0; row < parameters.nRows; row++) for(int col = 0; col < parameters.nCols; col++){
-			dispersal.disperse(cells[row][col], unif, neighborhoodTemplate);
+			dispersal.disperse(cells[row][col], parameters.nDispersalPackets, unif, neighborhoodTemplate);
 		}
 	}
 

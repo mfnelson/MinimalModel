@@ -5,6 +5,7 @@ import cell.LocalCell;
 import cern.jet.random.Uniform;
 import model.Model;
 import neighbors.NeighborhoodTemplate;
+import utils.CompactQueue;
 
 public class Dispersal {
 
@@ -29,12 +30,13 @@ public class Dispersal {
 	 * @param cell  The cell that will send beetles to a recipient. 
 	 * @param model 
 	 * @param template  */
-	public void disperse(LocalCell cell, Uniform unif, NeighborhoodTemplate template){
+	public void disperse(LocalCell cell, int nPackets, Uniform unif, NeighborhoodTemplate template){
 		if(cell.censusDispersingBeetles()[0] > 0){
-			Cell recipient = cell.getRandomWeightedRecipient(unif, template);
-			recipient.receiveBeetles(cell.sendBeetles());
-			int a = 0;
-			a ++;
+			CompactQueue cq = new CompactQueue(cell.sendBeetles(), nPackets);
+			for(int packet = 0; packet < nPackets; packet++){
+				Cell recipient = cell.getRandomWeightedRecipient(unif, template);
+				recipient.receiveBeetles(cq.next());
+			}
 		}
 	}
 	
