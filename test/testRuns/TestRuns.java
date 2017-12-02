@@ -86,7 +86,7 @@ public class TestRuns {
 			cell.addEmergingBeetles(1);
 			model.disperseBeetles();
 		}
-		receiveRemoteBeetles(modelGrid);
+		modelCommunication(modelGrid);
 		finalizeDispersal(modelGrid);
 	}
 	
@@ -126,7 +126,7 @@ public class TestRuns {
 			initializeDispersal(modelGrid);
 			/* All models disperse their beetles */
 			disperseBeetles(modelGrid);
-			receiveRemoteBeetles(modelGrid);
+			modelCommunication(modelGrid);
 			/* All models finalize the year's dispersal and
 			 * update the NetCDF data recorders. */
 			finalizeDispersal(modelGrid);
@@ -161,7 +161,10 @@ public class TestRuns {
 		}}
 	}
 	
-	private static void receiveRemoteBeetles(Model[][] modelGrid){
+	
+	
+	private static void modelCommunication(Model[][] modelGrid){
+		
 		
 		int nGridRows = modelGrid.length;
 		int nGridCols = modelGrid[0].length;
@@ -175,8 +178,12 @@ public class TestRuns {
 				Model targetMod = modelGrid[targetCoords[0]][targetCoords[1]];
 				int[][] beetles = sourceMod.stageBeetlesForRemoteSector(sector);
 				targetMod.receiveBeetlesFromRemoteSector(sector, beetles);
+				double[][] scores = targetMod.sendAttractivenessScoresToRemote(sector);
+				sourceMod.receiveAttractivenessScoresFromRemote(sector, scores);
 			}}}
 	}
+	
+	
 	
 	private static void saveSimulation(Model[][] modelGrid){
 		int nGridRows = modelGrid.length;

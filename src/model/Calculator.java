@@ -8,8 +8,35 @@ import cell.RemoteCell;
 public class Calculator {
 
 	
+	/** Attractiveness is maximum at 50% occupancy.  
+	 *  Attractiveness decreases to 0 linearly above and below 50%.
+	 * @param nTrees Number of trees in the cell.
+	 * @param nBeetles number of beetles in the cell.
+	 * @param maxBeetlesPerTree Maximum number of beetles a tree can hold.
+	 * @return
+	 */
 	public static double calculateAttractiveness(int nTrees, int nBeetles, int maxBeetlesPerTree){
 		int maxCapacity = nTrees * maxBeetlesPerTree;
+		/* Fraction occupied */
+		double fracOccupied = (double) nBeetles / (double) maxCapacity;
+		
+		return 1d - 2d * Math.abs(0.5 - fracOccupied);
+		
+	}
+	
+	/** Calculate the distance between two cells given the cell's offset coordinates
+	 *  and the cell width.
+	 * @param row offset row coordinate
+	 * @param col offset column coordinate
+	 * @return
+	 */
+	public static double dist(int row, int col, double cellWidth){
+		return cellWidth * Math.sqrt((double)(row * row) + (double)(col * col));
+	}
+	
+	/** The distance and attractiveness scores contribute equally to the overall dispersal score. */
+	public static double overallScore(double distanceScore, double attractivenessScore){
+		return 0.5 * distanceScore + 0.5 * attractivenessScore;
 	}
 	
 	/** Create a sequence of integers with an interval of 1

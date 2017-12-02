@@ -14,7 +14,7 @@ public class LocalCell implements Cell{
 	int nTrees = 0;
 	
 	/** Attractiveness, based on cell capacity and current occupancy. */
-	double attractiveness = 0;
+	public double attractiveness = 1d;
 	
 	/** Count of beetles emerging in the spring in order to disperse to other cells. */
 	int nEmergingBeetles = 0;
@@ -22,7 +22,7 @@ public class LocalCell implements Cell{
 	int nArrivingBeetles = 0;
 
 	/** The collection of cells that this cell may disperse emerging beetles to. */
-	private Neighborhood neighborhood;
+	public Neighborhood neighborhood;
 	
 	public LocalCell(int nBeetles){this.nBeetles = nBeetles;}
 
@@ -35,9 +35,7 @@ public class LocalCell implements Cell{
 	public int census(){return nBeetles;}
 
 	/** Return the number of emerging (index 0) and arriving beetles (index 1). */
-	public int[] censusDispersingBeetles(){
-		return new int[] {nEmergingBeetles, nArrivingBeetles};
-	}
+	public int[] censusDispersingBeetles(){return new int[] {nEmergingBeetles, nArrivingBeetles};}
 	
 	/** Randomly choose a cell from this cell's neighborhood.  Weights are related
 	 *  to the neighbors' distances from this cell.
@@ -80,4 +78,7 @@ public class LocalCell implements Cell{
 	
 	/** Add beetles to the count of overwintering beetles. */
 	public void addBeetles(int n){nBeetles += n;}
+	
+	/** Multiplication by 1 protects the attractiveness field. */
+	public double getAttractiveness(){return 1 * attractiveness;}
 }

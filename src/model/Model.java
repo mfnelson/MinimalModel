@@ -103,10 +103,11 @@ public class Model {
 	public void initializeRandomEngine(int rand){re = new MersenneTwister(rand);	}
 
 	public void simulate() throws IOException, InvalidRangeException{
+		updateNeighborScores();
 		for(int year = 0; year < parameters.nYears; year++){
 			disperseBeetles();
 			dispersal.finalizeDispersal(this);
-			
+			updateNeighborScores();
 			ConsoleReporters.censusLocalCells(this);
 			ConsoleReporters.censusRemoteDispersingBeetles(this);
 			ncdfReporter.step(this);
@@ -139,6 +140,13 @@ public class Model {
 		dispersal.initializeDispersal(this);
 	}
 	
+	public void updateNeighborScores(){
+		
+		for(int row = 0; row < parameters.nRows; row++) for(int col = 0; col < parameters.nCols; col++){
+			cells[row][col].neighborhood.updateNeighborScores(neighborhoodTemplate);
+		}
+	}
+	
 	/**  Loop through all the model's grid cells and disperse beetles to target cells. */
 	public void disperseBeetles(){
 		for(int row = 0; row < parameters.nRows; row++) for(int col = 0; col < parameters.nCols; col++){
@@ -164,6 +172,31 @@ public class Model {
 		}
 	}
 
+	public double[][] sendAttractivenessScoresToRemote(int sectorCode){
+		int minRow = localSectorCellCoords.get(sectorCode)[0];
+		int maxRow = localSectorCellCoords.get(sectorCode)[1];
+		int minCol = localSectorCellCoords.get(sectorCode)[2];
+		int maxCol = localSectorCellCoords.get(sectorCode)[3];
+		
+		double[][] scores = new double[maxRow - minRow + 1][maxCol - minCol + 1];
+		for(int row = minRow; row <= maxRow; row++)
+		for(int col = minCol; col <= maxCol; col ++){
+			scores[row - minRow][col - minCol] = cells[row][col].getAttractiveness();
+		}
+		return scores;
+	}
+	
+	/** Get the attractiveness scores for the remote cells in a remote sector. */
+	public void receiveAttractivenessScoresFromRemote(int sector, double[][] scores){
+		int nRows = remoteSectors.get(sector).length;
+		int nCols = remoteSectors.get(sector)[0].length;
+		
+		for(int row = 0; row < nRows; row++) for(int col = 0; col < nCols; col++){
+			remoteSectors.get(sector)[row][col].attractiveness = scores[row][col];
+		}
+	}
+	
+	
 	/** Return an array of beetle counts for a neighboring model to add to the
 	 *  corresponding local cells in its grid.
 	 * @param sector the number of the sector to which to send beetles, in reference to the local model.
@@ -181,7 +214,7 @@ public class Model {
 		
 		return toSend;
 	}
-
+	
 	/** Return the cell (local or remote) located at the specified coordinates. */
 	public Cell getCell(int[] coords){return getCell(coords[0], coords[1]);}
 	/** Return the cell (local or remote) located at the specified row and column coordinates. */

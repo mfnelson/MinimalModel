@@ -4,11 +4,14 @@ import java.util.Arrays;
 
 import cell.Cell;
 import cern.jet.random.Uniform;
+import model.Calculator;
 import model.Model;
 
 public class Neighborhood {
 
 	Cell[] neighbors;
+	
+	double[] neighborScores;
 	
 	public Neighborhood(
 			NeighborhoodTemplate template, 
@@ -26,18 +29,31 @@ public class Neighborhood {
 	 * @param col
 	 * @param model */
 	private void buildNeighbors(NeighborhoodTemplate template, int row, int col, Model model){
-		/* Build coordinates */
+
+		neighborScores = new double[template.cumulativeWeightedDistanceScores.length];
+		
+		/* Build coordinates
+		 * Build scores */
 		for(int i = 0; i < template.distances.length; i++){
 			int offsetRow = row + template.offsetCoordinates[i][0];
 			int offsetColumn = col + template.offsetCoordinates[i][1];
 			neighbors[i] = model.getCell(offsetRow, offsetColumn);
+			neighborScores[i] = template.cumulativeWeightedDistanceScores[i];
 		}
 	}
+	
+	public void updateNeighborScores(NeighborhoodTemplate template){
+		for(int i = 0; i < template.distances.length; i++){
+			neighborScores[i] = Calculator.overallScore(template.cumulativeWeightedDistanceScores[i], neighbors[i].attractiveness);
+		}
+	}
+	
 	
 	/** Randomly select a cell from the neighborhood.  The likelihood
 	 *  of being selected is weighted by the distance from the central cell */
 	public Cell getWeightedRandomCell(Uniform unif, NeighborhoodTemplate template){
-		double rand = unif.nextDoubleFromTo(0d, template.cumulativeWeightedDistanceScores[template.unweightedDistanceScores.length - 1]);
+//		double rand = unif.nextDoubleFromTo(0d, template.cumulativeWeightedDistanceScores[template.unweightedDistanceScores.length - 1]);
+		double rand = unif.nextDoubleFromTo(0d, neighborScores[neighborScores.length - 1]);
 		
 		/* This was confusing to me so I needed to enumerate the possibilities.
 		 * Per Javadoc:

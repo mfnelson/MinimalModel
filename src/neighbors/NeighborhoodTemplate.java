@@ -42,7 +42,8 @@ public class NeighborhoodTemplate {
 		for(int col = -gridMaxDim; col <= gridMaxDim; col++)
 		for(int row = -gridMaxDim; row <= gridMaxDim; row++){
 			
-			double distance = dist(row, col) * cellWidth;
+//			double distance = dist(row, col) * cellWidth;
+			double distance = Calculator.dist(row, col, cellWidth);
 			 
 			if(distance <= neighborhoodRadius){
 				tempOffsets[count][0] = row;
@@ -63,7 +64,8 @@ public class NeighborhoodTemplate {
 	private double[] buildDistances(double cellWidth, double distanceSelf){
 		double[] outputDist = new double[offsetCoordinates.length];
 		for(int i = 0; i < offsetCoordinates.length; i++){
-			double distance = cellWidth * dist(offsetCoordinates[i][0], offsetCoordinates[i][1]); 
+//			double distance = cellWidth * dist(offsetCoordinates[i][0], offsetCoordinates[i][1]); 
+			double distance = Calculator.dist(offsetCoordinates[i][0], offsetCoordinates[i][1], cellWidth); 
 			if(distance == 0)
 				outputDist[i] = distanceSelf;
 			else
@@ -72,7 +74,7 @@ public class NeighborhoodTemplate {
 		return outputDist;
 	}
 	
-	private double dist(int row, int col){
-		return Math.sqrt((double)(row * row) + (double)(col * col));
-	}
+//	private double dist(int row, int col){
+//		return Math.sqrt((double)(row * row) + (double)(col * col));
+//	}
 }
