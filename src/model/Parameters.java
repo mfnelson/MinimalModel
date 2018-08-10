@@ -33,7 +33,7 @@ public class Parameters {
 	public final double scoreWeightAttractiveness;
 	public final double scoreWeightDistance;
 	
-	public final Map<String, String> parameterMap;
+	public final Map<String, String[]> parameterMap;
 	
 	
 	
@@ -41,30 +41,30 @@ public class Parameters {
 		
 		parameterMap = CSVUtils.csvToHashMap(parameterFilename);
 		
-		randomSeed = Integer.parseInt(parameterMap.get("randomSeed"));
+		randomSeed = Integer.parseInt(parameterMap.get("randomSeed")[0]);
 		
-		nRows = Integer.parseInt(parameterMap.get("nRows"));
-		nCols = Integer.parseInt(parameterMap.get("nCols"));
-		nYears = Integer.parseInt(parameterMap.get("nYears"));
+		nRows = Integer.parseInt(parameterMap.get("nRows")[0]);
+		nCols = Integer.parseInt(parameterMap.get("nCols")[0]);
+		nYears = Integer.parseInt(parameterMap.get("nYears")[0]);
 		
-		saveFileName = parameterMap.get("saveFileName");
+		saveFileName = parameterMap.get("saveFileName")[0];
 		
-		neighborhoodRadius = Double.parseDouble(parameterMap.get("neighborhoodRadius"));
-		distanceSelf = Double.parseDouble(parameterMap.get("distanceSelf"));
-		cellWidth = Double.parseDouble(parameterMap.get("cellWidth"));
+		neighborhoodRadius = Double.parseDouble(parameterMap.get("neighborhoodRadius")[0]);
+		distanceSelf = Double.parseDouble(parameterMap.get("distanceSelf")[0]);
+		cellWidth = Double.parseDouble(parameterMap.get("cellWidth")[0]);
 		
-		distanceParamA = Double.parseDouble(parameterMap.get("distanceParamA"));
-		distanceParamB = Double.parseDouble(parameterMap.get("distanceParamB"));
-		distanceScoreWeight = Double.parseDouble(parameterMap.get("distanceScoreWeight"));
+		distanceParamA = Double.parseDouble(parameterMap.get("distanceParamA")[0]);
+		distanceParamB = Double.parseDouble(parameterMap.get("distanceParamB")[0]);
+		distanceScoreWeight = Double.parseDouble(parameterMap.get("distanceScoreWeight")[0]);
 		
-		nDispersalPackets = Integer.parseInt(parameterMap.get("nDispersalPackets"));
+		nDispersalPackets = Integer.parseInt(parameterMap.get("nDispersalPackets")[0]);
 		
-		beetleReproductionRate = Double.parseDouble(parameterMap.get("beetleReproductionRate"));
-		initialBeetlesPerCell = Integer.parseInt(parameterMap.get("initialBeetlesPerCell"));
+		beetleReproductionRate = Double.parseDouble(parameterMap.get("beetleReproductionRate")[0]);
+		initialBeetlesPerCell = Integer.parseInt(parameterMap.get("initialBeetlesPerCell")[0]);
 		
-		nTreesPerCell = Integer.parseInt(parameterMap.get("nTreesPerCell"));
+		nTreesPerCell = Integer.parseInt(parameterMap.get("nTreesPerCell")[0]);
  
-		scoreWeightAttractiveness = Double.parseDouble(parameterMap.get("scoreWeightAttractiveness"));
-		scoreWeightDistance = Double.parseDouble(parameterMap.get("scoreWeightDistance"));
+		scoreWeightAttractiveness = Double.parseDouble(parameterMap.get("scoreWeightAttractiveness")[0]);
+		scoreWeightDistance = Double.parseDouble(parameterMap.get("scoreWeightDistance")[0]);
 	}
 }

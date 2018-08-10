@@ -10,11 +10,8 @@ public class LocalCell implements Cell{
 	/** Count of overwintering beetles. */
 	private int nBeetles = 0;
 	
-	/** Count of living trees. */
-	int nTrees = 0;
-	
 	/** Attractiveness, based on cell capacity and current occupancy. */
-	public double attractiveness = 1d;
+	double attractiveness = 1d;
 	
 	/** Count of beetles emerging in the spring in order to disperse to other cells. */
 	int nEmergingBeetles = 0;
@@ -79,6 +76,7 @@ public class LocalCell implements Cell{
 	/** Add beetles to the count of overwintering beetles. */
 	public void addBeetles(int n){nBeetles += n;}
 	
-	/** Multiplication by 1 protects the attractiveness field. */
-	public double getAttractiveness(){return 1 * attractiveness;}
+	public double getAttractiveness(){return attractiveness;}
+	public void setAttractiveness(double attractiveness){this.attractiveness = attractiveness;} 
+	
 }

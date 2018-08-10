@@ -44,8 +44,6 @@ public class Model {
 	private RandomEngine re;
 	public final Uniform unif;
 
-	public Dispersal dispersal;
-
 	/** row and column min/max coords.<br>
 	 * Convenience fields, so that we don't have 
 	 * to re-calculate them multiple times.
@@ -95,8 +93,6 @@ public class Model {
 		cells = new LocalCell[parameters.nRows][parameters.nCols];
 		remoteSectors = new ArrayList<RemoteCell[][]>();
 		buildCells();
-
-		dispersal = new Dispersal();
 	}
 
 	/** Reinitialize the model's random number generator with the given input int. */
@@ -106,7 +102,7 @@ public class Model {
 		updateNeighborScores();
 		for(int year = 0; year < parameters.nYears; year++){
 			disperseBeetles();
-			dispersal.finalizeDispersal(this);
+			Dispersal.finalizeDispersal(this);
 			updateNeighborScores();
 			ConsoleReporters.censusLocalCells(this);
 			ConsoleReporters.censusRemoteDispersingBeetles(this);
@@ -137,7 +133,7 @@ public class Model {
 
 	/** Initialize the dispersal season by staging overwintering beetles for emergence */
 	public void initilizeDispersal(){
-		dispersal.initializeDispersal(this);
+		Dispersal.initializeDispersal(this);
 	}
 	
 	public void updateNeighborScores(){
@@ -150,7 +146,7 @@ public class Model {
 	/**  Loop through all the model's grid cells and disperse beetles to target cells. */
 	public void disperseBeetles(){
 		for(int row = 0; row < parameters.nRows; row++) for(int col = 0; col < parameters.nCols; col++){
-			dispersal.disperse(cells[row][col], parameters.nDispersalPackets, unif, neighborhoodTemplate);
+			Dispersal.disperse(cells[row][col], parameters.nDispersalPackets, unif, neighborhoodTemplate);
 		}
 	}
 

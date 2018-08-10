@@ -17,6 +17,8 @@ public class RemoteCell implements Cell {
 	public void reset(){
 		nArrivingBeetles = 0;
 	}
-	
+
+	public double getAttractiveness() {return attractiveness;}
+	public void setAttractiveness(double attractiveness) {this.attractiveness = attractiveness;}
 	
 }

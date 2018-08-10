@@ -2,12 +2,10 @@ package testRuns;
 import java.io.IOException;
 
 import org.junit.Before;
-import org.junit.Test;
 
-import cell.LocalCell;
-import model.Calculator;
 import model.Model;
 import reporters.ConsoleReporters;
+import submodels.Dispersal;
 import ucar.ma2.InvalidRangeException;
 
 public class testLoadModel {
@@ -22,7 +20,7 @@ public class testLoadModel {
 		model2 = model;
 	}
 
-	private Model[][] buildGrid(int nGridRows, int nGridCols, String paramFileName, String outputFilePrefix){
+	public Model[][] buildGrid(int nGridRows, int nGridCols, String paramFileName, String outputFilePrefix){
 		Model[][] modelGrid = new Model[nGridRows][nGridCols];
 		for(int row = 0; row < nGridRows; row++)
 		for(int col = 0; col < nGridCols; col++){
@@ -36,7 +34,7 @@ public class testLoadModel {
 	
 	
 	
-	private void censusModels(Model[][] modelGrid, int year){
+	public void censusModels(Model[][] modelGrid, int year){
 		int nRows = modelGrid.length; int nCols = modelGrid[0].length;
 		for(int row = 0; row < nRows; row++){for(int col = 0; col < nCols; col++){
 				Model mod = modelGrid[row][col];
@@ -84,8 +82,6 @@ public class testLoadModel {
 			modelLeft.cells[0][0].getRandomWeightedRecipient(modelLeft.unif, modelLeft.neighborhoodTemplate).receiveBeetles(10);
 		}
 		
-		
-		
 		for(int remoteQuadrant = 0; remoteQuadrant < 8; remoteQuadrant++){
 			if(remoteQuadrant != 1 & remoteQuadrant != 5){
 				modelLeft.receiveBeetlesFromRemoteSector(remoteQuadrant, modelRight.stageBeetlesForRemoteSector(remoteQuadrant));
@@ -96,13 +92,13 @@ public class testLoadModel {
 			}
 		}
 		
-		modelLeft.dispersal.finalizeDispersal(modelLeft);
+		Dispersal.finalizeDispersal(modelLeft);
 		modelLeft.ncdfReporter.step(modelLeft);
 		System.out.println("Left Model");
 		ConsoleReporters.censusLocalCells(modelLeft);
 		modelLeft.ncdfReporter.saveFile(modelLeft);
 		
-		modelRight.dispersal.finalizeDispersal(modelRight);
+		Dispersal.finalizeDispersal(modelRight);
 		modelRight.ncdfReporter.step(modelRight);
 		System.out.println("Right Model");
 		ConsoleReporters.censusLocalCells(modelRight);
@@ -122,7 +118,7 @@ public class testLoadModel {
 		for(int remoteQuadrant = 0; remoteQuadrant < 8; remoteQuadrant++){
 			model.receiveBeetlesFromRemoteSector(remoteQuadrant, model2.stageBeetlesForRemoteSector((remoteQuadrant + 0) % 8));
 		}
-		model.dispersal.finalizeDispersal(model);
+		Dispersal.finalizeDispersal(model);
 		model.ncdfReporter.step(model);
 		ConsoleReporters.censusLocalCells(model);
 		model.ncdfReporter.saveFile(model);

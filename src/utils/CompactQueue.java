@@ -1,11 +1,9 @@
 package utils;
 
 public class CompactQueue {
-	int[] itemsPerEntry;
-	int[] entryCounts;
 
-	int[][] items;
-	int index = 0;
+	private int[][] items;
+	private int index = 0;
 
 	public CompactQueue(int itemCount, int packetCount){
 
@@ -38,5 +36,4 @@ public class CompactQueue {
 		}
 		else return 0;
 	}
-
 }

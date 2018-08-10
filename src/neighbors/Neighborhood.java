@@ -44,7 +44,7 @@ public class Neighborhood {
 	
 	public void updateNeighborScores(NeighborhoodTemplate template){
 		for(int i = 0; i < template.distances.length; i++){
-			neighborScores[i] = Calculator.overallScore(template.cumulativeWeightedDistanceScores[i], neighbors[i].attractiveness);
+			neighborScores[i] = Calculator.overallScore(template.cumulativeWeightedDistanceScores[i], neighbors[i].getAttractiveness());
 		}
 	}
 	
